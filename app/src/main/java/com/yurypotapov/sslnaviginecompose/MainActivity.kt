@@ -27,13 +27,6 @@ class MainActivity : ComponentActivity() {
         // Initialize Navigine library
         Navigine.initialize(applicationContext);
         NavigineSdk.setUserHash("FD45-C20F-3C16-F8CA");
-
-        val mNavigineSdk = NavigineSdk.getInstance()
-        val mLocationManager: LocationManager = mNavigineSdk.locationManager
-        mLocationManager.addLocationListener(LocationListener());
-        mLocationManager.locationId = 91226;
-        val mNavigationManager = mNavigineSdk.getNavigationManager(mLocationManager);
-        mNavigationManager.addPositionListener(PositionListener());
 //        mNavigationManager.startLogRecording();
 
 
@@ -74,7 +67,14 @@ class MainActivity : ComponentActivity() {
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { result.value = "FAB clicked" },
+                    onClick = {
+                        val mNavigineSdk = NavigineSdk.getInstance()
+                        val mLocationManager: LocationManager = mNavigineSdk.locationManager
+                        mLocationManager.locationId = 91226;
+                        mLocationManager.addLocationListener(LocationListener());
+                        val mNavigationManager = mNavigineSdk.getNavigationManager(mLocationManager);
+                        mNavigationManager.addPositionListener(PositionListener());
+                    },
                     shape = fabShape,
                     backgroundColor = Color(Color.White.value)
                 ) {
@@ -100,8 +100,7 @@ class MainActivity : ComponentActivity() {
                                 label = { Text(text = "Dashboard") },
                                 selected = selectedItem.value == "Dashboard",
                                 onClick = {
-                                    result.value = "Dashboard icon clicked"
-                                    selectedItem.value = "Dashboard"
+
                                 },
                                 alwaysShowLabel = false,
                             )
