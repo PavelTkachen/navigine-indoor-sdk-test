@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">SSL Navigine Compose</string>
+    <string name="app_name" translatable="false">Navigation App</string>
+    <string name="permission_request">Additional permissions are required to provide the functionality of the application!</string>
+    <string name="permission_request_button">Request</string>
+    <string name="permission_complete">Great Work! All required permission was completed!</string>
+    <string name="permission_complete_button">Complete</string>
+    <string name="permission_complet_failed">It\'s a shame, but the app needs all the required permissions to run!</string>
+    <string name="search_objects_drawer_title">Search Objects</string>
+    <string name="search_route_drawer_title">Search Route</string>
+    <string name="home_menu">Home</string>
+    <string name="debug_menu">Debug Info</string>
 </resources>
