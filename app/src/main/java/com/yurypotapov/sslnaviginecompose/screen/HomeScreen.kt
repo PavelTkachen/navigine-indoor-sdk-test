@@ -3,12 +3,9 @@ package com.yurypotapov.sslnaviginecompose.screen
 import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.runtime.*
@@ -18,8 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.viewinterop.AndroidView
@@ -32,25 +27,39 @@ import com.yurypotapov.sslnaviginecompose.listener.LocationListener
 import com.yurypotapov.sslnaviginecompose.listener.PositionListener
 import kotlinx.coroutines.launch
 import com.yurypotapov.sslnaviginecompose.R;
+import com.yurypotapov.sslnaviginecompose.service.NavigineService
 
 
 class HomeScreen(private val context: Context) {
 
-    private lateinit var locationView: LocationView;
+    private var locationView: LocationView;
+    private var navigineService: NavigineService =
+        NavigineService(context, "FD45-C20F-3C16-F8CA", 91226);
 
     companion object {
         const val SEARCH_OBJECTS_DRAWER_STATE = "search_objects_drawer_state";
         const val SEARCH_ROUTE_DRAWER_STATE = "search_route_drawer_state";
     }
 
+    init {
+        this.navigineService.init();
+        this.locationView = this.navigineService.getLocationView();
+    }
+
     @Composable
     public fun GetDrawerHeader(drawerState: String) {
-        val title = when(drawerState) {
+        val title = when (drawerState) {
             SEARCH_OBJECTS_DRAWER_STATE -> context.getString(R.string.search_objects_drawer_title)
             SEARCH_ROUTE_DRAWER_STATE -> context.getString(R.string.search_route_drawer_title)
             else -> "UNDEFINED TITLE"
         }
-        Text(text = title, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, fontSize = 4.em)
+        Text(
+            text = title,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            fontSize = 4.em
+        )
     }
 
     @ExperimentalMaterialApi
@@ -63,27 +72,21 @@ class HomeScreen(private val context: Context) {
         val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
         val scope = rememberCoroutineScope();
 
-        // Initialize Navigine library
-        Navigine.initialize(context);
-        NavigineSdk.setUserHash("FD45-C20F-3C16-F8CA");
-        val mNavigineSdk = NavigineSdk.getInstance()
-        val mLocationManager: LocationManager = mNavigineSdk.locationManager
-        mLocationManager.locationId = 91226;
-        mLocationManager.addLocationListener(LocationListener());
-        val mNavigationManager = mNavigineSdk.getNavigationManager(mLocationManager);
-        mNavigationManager.addPositionListener(PositionListener());
+
+
+
+
+
+
         //initial traditional android view
         this.locationView = LocationView(context);
-        this.locationView.showBeacons(true);
-        this.locationView.refreshDrawableState();
-
-        val mRouteManager = mNavigineSdk.getRouteManager(mLocationManager, mNavigationManager);
-        val graphTags = mRouteManager.graphTags;
-
 
         ModalBottomSheetLayout(
             sheetContent = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(15.dp)) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(15.dp)
+                ) {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         GetDrawerHeader(drawerStateValue);
                     }
@@ -91,9 +94,16 @@ class HomeScreen(private val context: Context) {
                 when (drawerStateValue) {
                     SEARCH_OBJECTS_DRAWER_STATE -> {
                         LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                            items(graphTags) {
-                                Text(text = it)
-                            }
+//                            items(graphTags) {
+//                                Card(
+//                                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
+//                                    onClick = { null }
+//                                ) {
+//                                    Column(modifier = Modifier.padding(16.dp)) {
+//                                        Text(text = it)
+//                                    }
+//                                }
+//                            }
                         }
                     }
                     SEARCH_ROUTE_DRAWER_STATE -> {
@@ -156,12 +166,10 @@ class HomeScreen(private val context: Context) {
                     ) {
                         Row {
                             AndroidView(factory = {
-                                locationView.apply {
-                                    setSublocation(133764)
-                                    showBeacons(true)
-                                }
+                                locationView;
                             });
                         }
+
                     }
                 },
                 floatingActionButton = {
@@ -188,7 +196,10 @@ class HomeScreen(private val context: Context) {
                             ) {
                                 BottomNavigationItem(
                                     icon = {
-                                        Icon(Icons.Rounded.Home, context.getString(R.string.home_menu))
+                                        Icon(
+                                            Icons.Rounded.Home,
+                                            context.getString(R.string.home_menu)
+                                        )
                                     },
                                     label = { Text(text = context.getString(R.string.home_menu)) },
                                     selected = selectedItem.value == context.getString(R.string.home_menu),
@@ -199,7 +210,10 @@ class HomeScreen(private val context: Context) {
                                 )
                                 BottomNavigationItem(
                                     icon = {
-                                        Icon(painterResource(R.drawable.ic_debug), context.getString(R.string.debug_menu))
+                                        Icon(
+                                            painterResource(R.drawable.ic_debug),
+                                            context.getString(R.string.debug_menu)
+                                        )
                                     },
                                     label = { Text(text = "Debug") },
                                     selected = selectedItem.value == context.getString(R.string.debug_menu),
@@ -215,5 +229,11 @@ class HomeScreen(private val context: Context) {
                 }
             )
         }
+    }
+
+    @ExperimentalMaterialApi
+    @Composable
+    public fun LazyColumnRow(title: String, onClickValue: (String) -> Unit) {
+        ListItem(text = { Text(text = title)})
     }
 }
