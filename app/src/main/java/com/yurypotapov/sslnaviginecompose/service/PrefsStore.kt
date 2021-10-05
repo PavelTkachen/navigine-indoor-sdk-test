@@ -9,12 +9,10 @@ class PrefsStore(private val context: Context, private val sharedPreferencesKey:
         context.getSharedPreferences(this.sharedPreferencesKey, 0);
 
     override fun setValue(key: String, value: String) {
-        //TODO Checking datatype for any types
         this.store.edit().putString(key, value).apply();
     }
 
     override fun getValue(key: String): String? {
-        //TODO Checking datatype for any types
         return this.store.getString(key, null);
     }
 
@@ -32,5 +30,9 @@ class PrefsStore(private val context: Context, private val sharedPreferencesKey:
 
     override fun getStore(): Any {
         return this.store;
+    }
+
+    override fun clearStore() {
+        this.store.edit().clear().apply();
     }
 }

@@ -7,4 +7,5 @@ interface StoreInterface {
     public fun isExist(key: String): Boolean
     public fun save(key: String)
     public fun getStore(): Any;
+    public fun clearStore();
 }

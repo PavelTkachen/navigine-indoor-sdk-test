@@ -1,40 +1,42 @@
-package com.yurypotapov.sslnaviginecompose.screen
+package com.yurypotapov.sslnaviginecompose.screen;
 
-import android.content.Context
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
+import android.content.Context;
+import androidx.compose.foundation.layout.*;
+import androidx.compose.foundation.lazy.LazyColumn;
+import androidx.compose.foundation.shape.RoundedCornerShape;
+import androidx.compose.material.*;
+import androidx.compose.material.icons.Icons;
+import androidx.compose.material.icons.rounded.Home;
+import androidx.compose.material.icons.rounded.LocationOn;
+import androidx.compose.runtime.*;
+import androidx.compose.ui.Alignment;
+import androidx.compose.ui.Modifier;
+import androidx.compose.ui.graphics.Color;
+import androidx.compose.ui.res.painterResource;
+import androidx.compose.ui.text.font.FontWeight;
+import androidx.compose.ui.text.style.TextAlign;
+import androidx.compose.ui.unit.dp;
+import androidx.compose.ui.unit.em;
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.navigation.NavHostController
-import com.navigine.idl.java.LocationManager
-import com.navigine.idl.java.NavigineSdk
-import com.navigine.sdk.Navigine
-import com.navigine.view.LocationView
-import com.yurypotapov.sslnaviginecompose.listener.LocationListener
-import com.yurypotapov.sslnaviginecompose.listener.PositionListener
-import kotlinx.coroutines.launch
+import androidx.navigation.NavHostController;
+import com.navigine.idl.java.Venue
+import com.navigine.view.LocationView;
+import kotlinx.coroutines.launch;
 import com.yurypotapov.sslnaviginecompose.R;
 import com.yurypotapov.sslnaviginecompose.service.NavigineService
 
-
 class HomeScreen(private val context: Context) {
+    private var venues = ArrayList<Venue>();
 
+    private fun setVenues(value: ArrayList<Venue>) {
+        venues = value;
+    }
+    private fun getVenues(): ArrayList<Venue> {
+        return this.venues;
+    }
     private var locationView: LocationView;
     private var navigineService: NavigineService =
-        NavigineService(context, "FD45-C20F-3C16-F8CA", 91226);
+        NavigineService(context, "FD45-C20F-3C16-F8CA", 91226, ::setVenues);
 
     companion object {
         const val SEARCH_OBJECTS_DRAWER_STATE = "search_objects_drawer_state";
@@ -67,16 +69,11 @@ class HomeScreen(private val context: Context) {
     public fun HomeScreenPage(navHostController: NavHostController) {
         val result = remember { mutableStateOf("") };
         val selectedItem = remember { mutableStateOf("upload") }
-        val fabShape = RoundedCornerShape(50)
         var drawerStateValue by remember { mutableStateOf(SEARCH_OBJECTS_DRAWER_STATE) }
+        var componentVenues by remember { mutableStateOf(ArrayList<Venue>())}
+        val fabShape = RoundedCornerShape(50)
         val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
         val scope = rememberCoroutineScope();
-
-
-
-
-
-
 
         //initial traditional android view
         this.locationView = LocationView(context);
@@ -87,23 +84,33 @@ class HomeScreen(private val context: Context) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(15.dp)
                 ) {
-                    Box(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
                         GetDrawerHeader(drawerStateValue);
                     }
                 }
                 when (drawerStateValue) {
                     SEARCH_OBJECTS_DRAWER_STATE -> {
-                        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-//                            items(graphTags) {
-//                                Card(
-//                                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
-//                                    onClick = { null }
-//                                ) {
-//                                    Column(modifier = Modifier.padding(16.dp)) {
-//                                        Text(text = it)
-//                                    }
-//                                }
-//                            }
+                        LazyColumn(modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()) {
+
+                            componentVenues.forEach {
+                                item {
+                                    Card(
+                                        modifier = Modifier
+                                            .padding(16.dp)
+                                            .fillMaxWidth(),
+                                        onClick = { null }
+                                    ) {
+                                        Column(modifier = Modifier.padding(16.dp)) {
+                                            Text(text = it.name)
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                     SEARCH_ROUTE_DRAWER_STATE -> {
@@ -131,6 +138,8 @@ class HomeScreen(private val context: Context) {
                     actions = {
                         IconButton(
                             onClick = {
+                                println("VENUES FROM STATE ${getVenues()}");
+                                componentVenues = getVenues();
                                 drawerStateValue = SEARCH_OBJECTS_DRAWER_STATE
                                 scope.launch {
                                     bottomState.show();
@@ -231,9 +240,10 @@ class HomeScreen(private val context: Context) {
         }
     }
 
+
     @ExperimentalMaterialApi
     @Composable
     public fun LazyColumnRow(title: String, onClickValue: (String) -> Unit) {
-        ListItem(text = { Text(text = title)})
+        ListItem(text = { Text(text = title) })
     }
 }
