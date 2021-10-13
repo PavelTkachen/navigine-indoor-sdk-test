@@ -6,6 +6,7 @@ import com.navigine.sdk.Navigine
 import com.navigine.view.LocationView
 import com.yurypotapov.sslnaviginecompose.listener.LocationListener
 import com.yurypotapov.sslnaviginecompose.listener.PositionListener
+import com.yurypotapov.sslnaviginecompose.listener.RouteListener
 import kotlin.reflect.KFunction1
 
 class NavigineService(
@@ -29,9 +30,12 @@ class NavigineService(
 
     private val mLocationView = LocationView(context);
 
+    private val mRouteManager: RouteManager = mNavigineSdk.getRouteManager(mLocationManager, mNavigationManager);
+
     public fun init() {
         mLocationManager.addLocationListener(LocationListener(context, setVenues));
         mNavigationManager.addPositionListener(PositionListener());
+        mRouteManager.addRouteListener(RouteListener());
         mLocationManager.locationId = this.defaultLocationId; //91226
     }
 
@@ -47,8 +51,8 @@ class NavigineService(
         return this.mNavigineSdk.locationListManager.locationList;
     }
 
-    public fun getRouteManager() {
-        this.mNavigineSdk.getRouteManager(this.mLocationManager, this.mNavigationManager);
+    public fun getRouteManager(): RouteManager {
+        return this.mRouteManager;
     }
 
 
@@ -60,7 +64,7 @@ class NavigineService(
         this.mLocationView.setZoomScale(20F)
         return this.mLocationView.apply {
             showBeacons(true)
-
+            showVenues(true)
             setSublocation(133764)
             setZoomScale(30F)
         }

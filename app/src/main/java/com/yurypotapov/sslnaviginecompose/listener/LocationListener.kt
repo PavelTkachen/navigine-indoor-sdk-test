@@ -14,6 +14,7 @@ class LocationListener(private val context: Context, private val setVenues: KFun
 
         if (p0 !== null) {
             p0.sublocations.forEach {
+                println("zones ${it.zones}")
                 if(it.venues.count() > 0) {
                     setVenues(it.venues);
                 }

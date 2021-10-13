@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp;
 import androidx.compose.ui.unit.em;
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController;
-import com.navigine.idl.java.Venue
+import com.navigine.idl.java.*
 import com.navigine.view.LocationView;
 import kotlinx.coroutines.launch;
 import com.yurypotapov.sslnaviginecompose.R;
@@ -31,21 +31,26 @@ class HomeScreen(private val context: Context) {
     private fun setVenues(value: ArrayList<Venue>) {
         venues = value;
     }
+
     private fun getVenues(): ArrayList<Venue> {
         return this.venues;
     }
+
     private var locationView: LocationView;
+    private var routeManager: RouteManager;
     private var navigineService: NavigineService =
         NavigineService(context, "FD45-C20F-3C16-F8CA", 91226, ::setVenues);
 
     companion object {
         const val SEARCH_OBJECTS_DRAWER_STATE = "search_objects_drawer_state";
         const val SEARCH_ROUTE_DRAWER_STATE = "search_route_drawer_state";
+        const val MENU_VENUE_LIST_STATE = "menu_venue_list_state";
     }
 
     init {
         this.navigineService.init();
         this.locationView = this.navigineService.getLocationView();
+        this.routeManager = this.navigineService.getRouteManager();
     }
 
     @Composable
@@ -53,6 +58,7 @@ class HomeScreen(private val context: Context) {
         val title = when (drawerState) {
             SEARCH_OBJECTS_DRAWER_STATE -> context.getString(R.string.search_objects_drawer_title)
             SEARCH_ROUTE_DRAWER_STATE -> context.getString(R.string.search_route_drawer_title)
+            MENU_VENUE_LIST_STATE -> context.getString(R.string.menu_venue_drawer_title)
             else -> "UNDEFINED TITLE"
         }
         Text(
@@ -70,14 +76,16 @@ class HomeScreen(private val context: Context) {
         val result = remember { mutableStateOf("") };
         val selectedItem = remember { mutableStateOf("upload") }
         var drawerStateValue by remember { mutableStateOf(SEARCH_OBJECTS_DRAWER_STATE) }
-        var componentVenues by remember { mutableStateOf(ArrayList<Venue>())}
+        var componentVenues by remember { mutableStateOf(ArrayList<Venue>()) }
         val fabShape = RoundedCornerShape(50)
         val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
         val scope = rememberCoroutineScope();
-
-        //initial traditional android view
+        var locationId by remember { mutableStateOf<Int?>(null) };
+        var sublocationId by remember { mutableStateOf<Int?>(null) };
+        var point by remember {
+            mutableStateOf<Point?>(null)
+        }
         this.locationView = LocationView(context);
-
         ModalBottomSheetLayout(
             sheetContent = {
                 Column(
@@ -92,18 +100,55 @@ class HomeScreen(private val context: Context) {
                     }
                 }
                 when (drawerStateValue) {
+                    MENU_VENUE_LIST_STATE -> {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                        ) {
+                            item {
+                                Card(
+                                    modifier = Modifier
+                                        .padding(16.dp)
+                                        .fillMaxWidth(),
+                                    onClick = {
+                                        if (locationId != null && sublocationId != null && point != null) {
+                                            scope.launch {
+                                                bottomState.hide();
+                                            }
+                                            routeManager.setTarget(
+                                                LocationPoint(point, locationId!!, sublocationId!!)
+                                            );
+                                        }
+//                                        locationView.setTargetPoint(Point(1.1108398F, 4.3091216F))
+                                    }
+                                ) {
+                                    Column(modifier = Modifier.padding(16.dp)) {
+                                        Text(text = "Построить маршрут")
+                                    }
+                                }
+                            }
+                        }
+                    }
                     SEARCH_OBJECTS_DRAWER_STATE -> {
-                        LazyColumn(modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()) {
-
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                        ) {
                             componentVenues.forEach {
                                 item {
                                     Card(
                                         modifier = Modifier
                                             .padding(16.dp)
                                             .fillMaxWidth(),
-                                        onClick = { null }
+                                        onClick = {
+                                            print("VALUE ${it.point}")
+                                            locationId = it.locationId;
+                                            sublocationId = it.sublocationId;
+                                            point = it.point;
+                                            drawerStateValue = MENU_VENUE_LIST_STATE
+                                        }
                                     ) {
                                         Column(modifier = Modifier.padding(16.dp)) {
                                             Text(text = it.name)
