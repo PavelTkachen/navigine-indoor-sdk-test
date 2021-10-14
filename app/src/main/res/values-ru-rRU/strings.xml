@@ -7,6 +7,7 @@
     <string name="permission_complet_failed">Жаль, но для работы приложения нужны все обязательные разрешения!</string>
     <string name="search_objects_drawer_title">Поиск объектов</string>
     <string name="search_route_drawer_title">Поиск маршрута</string>
+    <string name="menu_venue_drawer_title">Меню объекта</string>
     <string name="home_menu">Главная</string>
     <string name="debug_menu">Отладочная информация</string>
 </resources>

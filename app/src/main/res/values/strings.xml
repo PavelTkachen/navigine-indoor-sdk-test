@@ -7,6 +7,7 @@
     <string name="permission_complet_failed">It\'s a shame, but the app needs all the required permissions to run!</string>
     <string name="search_objects_drawer_title">Search Objects</string>
     <string name="search_route_drawer_title">Search Route</string>
+    <string name="menu_venue_drawer_title">Venue menu</string>
     <string name="home_menu">Home</string>
     <string name="debug_menu">Debug Info</string>
 </resources>
