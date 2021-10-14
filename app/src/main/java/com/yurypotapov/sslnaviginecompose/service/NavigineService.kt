@@ -7,6 +7,7 @@ import com.navigine.view.LocationView
 import com.yurypotapov.sslnaviginecompose.listener.LocationListener
 import com.yurypotapov.sslnaviginecompose.listener.PositionListener
 import com.yurypotapov.sslnaviginecompose.listener.RouteListener
+import com.yurypotapov.sslnaviginecompose.listener.ZoneListener
 import kotlin.reflect.KFunction1
 
 class NavigineService(
@@ -28,14 +29,21 @@ class NavigineService(
 
     private val mNavigationManager = mNavigineSdk.getNavigationManager(mLocationManager);
 
+    private val mRouteManager: RouteManager = mNavigineSdk.getRouteManager(mLocationManager, mNavigationManager);
+
     private val mLocationView = LocationView(context);
 
-    private val mRouteManager: RouteManager = mNavigineSdk.getRouteManager(mLocationManager, mNavigationManager);
+    // private val mZoneManager: ZoneManager = mNavigineSdk.getZoneManager(mLocationManager, mNavigationManager)
+
+    public fun zoneInit() {
+        //mZoneManager.addZoneListener(ZoneListener());
+    }
 
     public fun init() {
         mLocationManager.addLocationListener(LocationListener(context, setVenues));
         mNavigationManager.addPositionListener(PositionListener());
         mRouteManager.addRouteListener(RouteListener());
+
         mLocationManager.locationId = this.defaultLocationId; //91226
     }
 
@@ -55,6 +63,9 @@ class NavigineService(
         return this.mRouteManager;
     }
 
+    //public fun getZoneManager(): ZoneManager {
+      //  return this.mZoneManager;
+    // }
 
     public fun getNavigationManager(): NavigationManager? {
         return this.mNavigationManager;

@@ -23,7 +23,8 @@ import com.navigine.idl.java.*
 import com.navigine.view.LocationView;
 import kotlinx.coroutines.launch;
 import com.yurypotapov.sslnaviginecompose.R;
-import com.yurypotapov.sslnaviginecompose.service.NavigineService
+import com.yurypotapov.sslnaviginecompose.service.NavigineService;
+import com.yurypotapov.sslnaviginecompose.utils.AudioManager as CustomAudioManager;
 
 class HomeScreen(private val context: Context) {
     private var venues = ArrayList<Venue>();
@@ -119,8 +120,10 @@ class HomeScreen(private val context: Context) {
                                             routeManager.setTarget(
                                                 LocationPoint(point, locationId!!, sublocationId!!)
                                             );
+                                            navigineService.zoneInit();
+                                            val am: CustomAudioManager = CustomAudioManager(context);
+                                            am.soundEffect();
                                         }
-//                                        locationView.setTargetPoint(Point(1.1108398F, 4.3091216F))
                                     }
                                 ) {
                                     Column(modifier = Modifier.padding(16.dp)) {
