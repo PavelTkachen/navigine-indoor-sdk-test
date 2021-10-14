@@ -6,8 +6,15 @@ import com.navigine.idl.java.LocationListener
 import com.navigine.idl.java.Venue
 import java.lang.Error
 import kotlin.reflect.KFunction1
+import com.yurypotapov.sslnaviginecompose.store.GlobalVariable
 
-class LocationListener(private val context: Context, private val setVenues: KFunction1<ArrayList<Venue>, Unit>) :
+
+
+
+class LocationListener(
+    private val context: Context,
+    private val setVenues: KFunction1<ArrayList<Venue>, Unit>,
+) :
     LocationListener() {
 
     override fun onLocationLoaded(p0: Location?) {
@@ -15,7 +22,11 @@ class LocationListener(private val context: Context, private val setVenues: KFun
         if (p0 !== null) {
             p0.sublocations.forEach {
                 println("zones ${it.zones}")
-                if(it.venues.count() > 0) {
+                val appState = context as GlobalVariable;
+                if (it.zones.count() > 0) {
+                    appState.setZones(it.zones)
+                }
+                if (it.venues.count() > 0) {
                     setVenues(it.venues);
                 }
             }

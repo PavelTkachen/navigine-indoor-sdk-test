@@ -14,7 +14,7 @@ class NavigineService(
     private val context: Context,
     private val userHash: String,
     private val defaultLocationId: Int,
-    private val setVenues: KFunction1<ArrayList<Venue>, Unit>,
+    private val setVenues: KFunction1<ArrayList<Venue>, Unit>
 ) {
 
     init {
@@ -33,15 +33,9 @@ class NavigineService(
 
     private val mLocationView = LocationView(context);
 
-    // private val mZoneManager: ZoneManager = mNavigineSdk.getZoneManager(mLocationManager, mNavigationManager)
-
-    public fun zoneInit() {
-        //mZoneManager.addZoneListener(ZoneListener());
-    }
-
     public fun init() {
         mLocationManager.addLocationListener(LocationListener(context, setVenues));
-        mNavigationManager.addPositionListener(PositionListener());
+        mNavigationManager.addPositionListener(PositionListener(context));
         mRouteManager.addRouteListener(RouteListener());
 
         mLocationManager.locationId = this.defaultLocationId; //91226
@@ -63,11 +57,7 @@ class NavigineService(
         return this.mRouteManager;
     }
 
-    //public fun getZoneManager(): ZoneManager {
-      //  return this.mZoneManager;
-    // }
-
-    public fun getNavigationManager(): NavigationManager? {
+    public fun getNavigationManager(): NavigationManager {
         return this.mNavigationManager;
     }
 
@@ -79,6 +69,5 @@ class NavigineService(
             setSublocation(133764)
             setZoomScale(30F)
         }
-
     }
 }

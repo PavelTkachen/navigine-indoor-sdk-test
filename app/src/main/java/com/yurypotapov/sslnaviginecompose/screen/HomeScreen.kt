@@ -37,10 +37,10 @@ class HomeScreen(private val context: Context) {
         return this.venues;
     }
 
-    private var locationView: LocationView;
-    private var routeManager: RouteManager;
     private var navigineService: NavigineService =
         NavigineService(context, "FD45-C20F-3C16-F8CA", 91226, ::setVenues);
+    private var locationView: LocationView = this.navigineService.getLocationView();
+    private var routeManager: RouteManager = this.navigineService.getRouteManager();
 
     companion object {
         const val SEARCH_OBJECTS_DRAWER_STATE = "search_objects_drawer_state";
@@ -50,8 +50,6 @@ class HomeScreen(private val context: Context) {
 
     init {
         this.navigineService.init();
-        this.locationView = this.navigineService.getLocationView();
-        this.routeManager = this.navigineService.getRouteManager();
     }
 
     @Composable
@@ -120,9 +118,6 @@ class HomeScreen(private val context: Context) {
                                             routeManager.setTarget(
                                                 LocationPoint(point, locationId!!, sublocationId!!)
                                             );
-                                            navigineService.zoneInit();
-                                            val am: CustomAudioManager = CustomAudioManager(context);
-                                            am.soundEffect();
                                         }
                                     }
                                 ) {
